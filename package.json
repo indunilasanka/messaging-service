@@ -1,0 +1,31 @@
+{
+  "name": "messaging-service",
+  "version": "1.0.0",
+  "description": "[ZippyCrowd] Messaging Service",
+  "scripts": {
+    "deploy": "serverless deploy -s dev",
+    "takedown": "serverless remove -s dev",
+    "ddb:migrate": "cross-env STAGE=local node ./utils/dynamodb/create_table.js",
+    "ddb:purge": "cross-env STAGE=local node ./utils/dynamodb/purge.js",
+    "test": "serverless-bundle test"
+  },
+  "author": "Maria Santos",
+  "dependencies": {
+    "aws-sdk": "^2.437.0",
+    "lodash": "^4.17.11",
+    "merge-graphql-schemas": "^1.5.8",
+    "moment": "^2.24.0",
+    "serverless-appsync-plugin": "1.1.0",
+    "uuid": "^3.3.3",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@s88d-puppy/sls-appsync-offline": "^1.0.1",
+    "cross-env": "^5.2.0",
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "serverless": "^1.46.1",
+    "serverless-bundle": "^1.2.3"
+  }
+}

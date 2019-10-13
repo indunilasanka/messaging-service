@@ -1,0 +1,58 @@
+type Message {
+
+    id: ID
+    content: String
+    fileContent: String
+    fileName: String
+    fileType: String
+    s3FileName: String
+    createdAt: String
+    createdBy: String
+    conversationId: String
+    isDeleted: Boolean
+    isSystemGenerated: Boolean
+    readBy: String
+
+}
+
+type Mutation {
+
+    messageCreate(
+        conversationId: ID!
+        content: String
+        fileName: String
+        fileContent: String
+        fileType: String
+        createdBy: String!
+        isSystemGenerated: Boolean!
+    ): Message
+
+    messageDelete(
+        id: ID!
+        createdAt: String!
+    ): Message
+
+    messageRead(
+        id: ID!
+        createdAt: String!
+        userId: String!
+    ): Message
+
+}
+
+type Query {
+    
+    messages(
+        filter: String
+        query: String
+        userId: String
+    ): [Message]
+
+}
+
+type Subscription {
+    newMessage(conversationId: ID!): Message
+    @aws_subscribe(mutations: ["messageCreate"])
+    readMessage(conversationId: ID!): Message
+    @aws_subscribe(mutations: ["messageRead"])
+}

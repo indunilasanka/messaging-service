@@ -1,0 +1,241 @@
+Resources:
+  AppSyncLambdaMessagingServiceRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: "Lambda-${self:custom.appSync.serviceRole}-${file(./serverless.env.yml):${opt:stage}.STAGE}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "appsync.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: "AppSync-${self:custom.appSync.serviceRole}"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action: [
+                  "lambda:*"
+                ]
+                Resource: [
+                  "*"
+                ]
+
+  Conversation:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete  # ensure to change to Retain once in prod. Otherwise, the DB will start fresh on every deploy
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: id
+          AttributeType: S
+        -
+          AttributeName: createdBy
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: ${file(./serverless.env.yml):${opt:stage}.CONVERSATION_TABLE}
+      GlobalSecondaryIndexes:
+        -
+          IndexName: 'UserId'
+          KeySchema:
+            -
+              AttributeName: createdBy
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
+  ConversationUser:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete  # ensure to change to Retain once in prod. Otherwise, the DB will start fresh on every deploy
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+        -
+          AttributeName: conversationId
+          AttributeType: S
+        -
+          AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+        -
+          AttributeName: conversationId
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: ${file(./serverless.env.yml):${opt:stage}.CONVERSATION_USER_TABLE}
+      LocalSecondaryIndexes:
+        - IndexName: UserId
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      GlobalSecondaryIndexes:
+        -
+          IndexName: 'ConversationId'
+          KeySchema:
+            - AttributeName: conversationId
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
+  ConversationMessage:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete  # ensure to change to Retain once in prod. Otherwise, the DB will start fresh on every deploy
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: id
+          AttributeType: S
+        -
+          AttributeName: createdAt
+          AttributeType: S
+        -
+          AttributeName: createdBy
+          AttributeType: S
+        -
+          AttributeName: archived
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: id
+          KeyType: HASH
+        -
+          AttributeName: createdAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: ${file(./serverless.env.yml):${opt:stage}.CONVERSATION_MESSAGE_TABLE}
+      GlobalSecondaryIndexes:
+        -
+          IndexName: 'IsDeleted'
+          KeySchema:
+            - AttributeName: createdBy
+              KeyType: HASH
+            - AttributeName: archived
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
+  Users:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete  # ensure to change to Retain once in prod. Otherwise, the DB will start fresh on every deploy
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: ${file(./serverless.env.yml):${opt:stage}.USER_TABLE}
+
+# # User events queue
+#   UserEventsQueue:
+#     Type: "AWS::SQS::Queue"
+#     Properties:
+#       QueueName: ${self:service}-${file(./serverless.env.yml):${opt:stage}.STAGE}-user-events-queue
+#       DelaySeconds: 0
+#       MessageRetentionPeriod: 345600
+#       VisibilityTimeout: 60
+#       ReceiveMessageWaitTimeSeconds: 1
+#       MaximumMessageSize: 262144
+#       RedrivePolicy:
+#         deadLetterTargetArn: !GetAtt
+#           - UserEventsQueueDLQ
+#           - Arn
+#         maxReceiveCount: 3
+
+#   # User events queue DLQ
+#   UserEventsQueueDLQ:
+#     Type: AWS::SQS::Queue
+#     Properties:
+#       QueueName: ${self:service}-${file(./serverless.env.yml):${opt:stage}.STAGE}-user-dead-letter-queue
+#       MessageRetentionPeriod: 1209600
+
+#   # Policy for the 'userEventsQueue'
+#   UserEventSnsToUserEventsQueuePolicy:
+#     Type: AWS::SQS::QueuePolicy
+#     Properties:
+#       PolicyDocument:
+#         Version: "2012-10-17"
+#         Statement:
+#           - Sid: "allow-sns-messages"
+#             Effect: Allow
+#             Principal: "*"
+#             Resource: !GetAtt
+#               - UserEventsQueue
+#               - Arn
+#             Action: "SQS:SendMessage"
+#             Condition:
+#               ArnEquals:
+#                 aws:SourceArn:
+#                   Fn::Join:
+#                     - ''
+#                     - - arn:aws:sns
+#                       - ":"
+#                       - Ref: AWS::Region
+#                       - ":"
+#                       - Ref: AWS::AccountId
+#                       - ":user-account-${file(./serverless.env.yml):${opt:stage}.STAGE}-user-events"
+#       Queues:
+#         - Ref: UserEventsQueue
+
+#   UserEventsQueueSubscription:
+#     Type: 'AWS::SNS::Subscription'
+#     Properties:
+#       TopicArn:
+#         Fn::Join:
+#           - ''
+#           - - arn:aws:sns
+#             - ":"
+#             - Ref: AWS::Region
+#             - ":"
+#             - Ref: AWS::AccountId
+#             - ":user-account-${file(./serverless.env.yml):${opt:stage}.STAGE}-user-events"
+#       Endpoint: !GetAtt
+#         - UserEventsQueue
+#         - Arn
+#       Protocol: sqs
+      
+  # S3BucketOutputs:
+  #   Type: AWS::S3::Bucket
+  #   Properties:
+  #     BucketName: ${file(./serverless.env.yml):${opt:stage}.BUCKET_NAME}

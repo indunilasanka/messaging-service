@@ -1,0 +1,43 @@
+type Conversation {
+
+    id: ID
+    createdAt: String
+    createdBy: String
+    readBy: String
+    members: [ConversationUser]
+    messages: [Message]
+
+}
+
+type Query {
+
+    conversation(
+        id: ID!
+        from: String!
+        to: String!
+    ): Conversation
+
+    conversations(
+        userId: String!
+        from: String!
+        to: String!
+    ): [ConversationUser]
+    
+}
+
+type Mutation {
+
+    conversationCreate(
+        createdBy: String!
+    ): Conversation
+
+    conversationDelete(
+        id: ID!
+    ): Boolean
+
+    conversationRead(
+        id: ID!
+        userId: String!
+    ): Conversation
+
+}

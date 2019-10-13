@@ -1,0 +1,58 @@
+service:
+  name: messaging-service
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: ${file(./serverless.env.yml):${opt:stage}.REGION}
+  environment: ${file(./serverless.env.yml):${opt:stage}}
+  iamRoleStatements: ${file(./serverless.iam.yml):iamRoleStatements}
+  tracing:
+    apiGateway: true
+    lambda: true
+
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle
+  - serverless-appsync-plugin
+  - "@s88d-puppy/sls-appsync-offline"
+  
+functions:
+  graphql:
+    handler: handler.graphql
+  user:
+    handler: handler.user
+    events:
+      - sqs:arn:aws:sqs:${self:provider.region}:${file(./serverless.env.yml):${opt:stage}.ACCT_ID}:${self:service}-${file(./serverless.env.yml):${opt:stage}.STAGE}-user-events-queue
+
+custom:
+  bundle:
+    linting: false
+  bucketName: ${file(./serverless.env.yml):${opt:stage}.BUCKET_NAME}
+  accountId: ${file(./serverless.env.yml):${opt:stage}.ACCT_ID}
+  appsyncOffline:
+    port: 63333
+  appSync:
+    name: ${self:service.name}
+    authenticationType: API_KEY
+    mappingTemplatesLocation: ./src/mapping-templates
+    mappingTemplates: ${file(./mapping-template.yml):MappingTemplate}
+    schema: ${file(./schema.js)}
+    serviceRole: "${self:service.name}-service-role"
+    dataSources:
+      - type: AWS_LAMBDA
+        name: Lambda_Messaging
+        description: 'Lambda DataSource'
+        config:
+          functionName: graphql
+          serviceRoleArn: { Fn::GetAtt: [AppSyncLambdaMessagingServiceRole, Arn] }
+    
+resources: ${file(./serverless.resources.yml)}
+
+Outputs:
+  UserEventsQueueUrl:
+    Description: URL of the UserEventsQueue
+    Value:
+      "Ref": UserEventsQueue

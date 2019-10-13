@@ -1,0 +1,30 @@
+iamRoleStatements:
+  # Allow DynamoDB Access
+  - Effect: Allow
+    Action:
+      - dynamodb:DescribeTable
+      - dynamoDB:Query
+      - dynamoDB:Scan
+      - dynamoDB:GetItem
+      - dynamoDB:PutItem
+      - dynamoDB:UpdateItem
+      - dynamoDB:DeleteItem
+    Resource:
+      - "*"
+  - Effect: Allow
+    Action:
+      - s3:PutObject
+      - s3:PutObjectAcl
+    Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+  - Effect: Allow
+    Action:
+      - s3:GetObject
+      - s3:GetObjectAcl
+    Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+  - Effect: Allow
+    Action:
+      - sqs:ChangeMessageVisibility
+      - sqs:DeleteMessage
+      - sqs:GetQueueAttributes
+      - sqs:ReceiveMessage
+    Resource: "arn:aws:sqs:${self:provider.region}:${file(./serverless.env.yml):${opt:stage}.ACCT_ID}:${self:service}-${file(./serverless.env.yml):${opt:stage}.STAGE}-user-events-queue"

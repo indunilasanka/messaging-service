@@ -1,0 +1,70 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Query {
+  conversation(id: ID!, from: String!, to: String!): Conversation
+  conversations(userId: String!, from: String!, to: String!): [ConversationUser]
+  messages(filter: String, query: String, userId: String): [Message]
+}
+
+type Mutation {
+  conversationCreate(createdBy: String!): Conversation
+  conversationDelete(id: ID!): Boolean
+  conversationRead(id: ID!, userId: String!): Conversation
+  conversationAddUser(id: ID!, userId: String!): ConversationUser
+  conversationDeleteUser(id: ID!, userId: String!): ConversationUser
+  messageCreate(conversationId: ID!, content: String, fileName: String, fileContent: String, fileType: String, createdBy: String!, isSystemGenerated: Boolean!): Message
+  messageDelete(id: ID!, createdAt: String!): Message
+  messageRead(id: ID!, createdAt: String!, userId: String!): Message
+}
+
+type Subscription {
+  conversationAddUser(conversationId: String!): ConversationUser @aws_subscribe(mutations: ["conversationAddUser"])
+  conversationDeleteUser(conversationId: String!): ConversationUser @aws_subscribe(mutations: ["conversationDeleteUser"])
+  newMessage(conversationId: ID!): Message @aws_subscribe(mutations: ["messageCreate"])
+  readMessage(conversationId: ID!): Message @aws_subscribe(mutations: ["messageRead"])
+}
+
+type Conversation {
+  id: ID
+  createdAt: String
+  createdBy: String
+  readBy: String
+  members: [ConversationUser]
+  messages: [Message]
+}
+
+type ConversationUser {
+  userId: String
+  conversation: Conversation
+  conversationId: String
+  isDeleted: Boolean
+  createdAt: String
+  info: User
+}
+
+type User {
+  userId: String
+  email: String
+  firstName: String
+  lastName: String
+  profileImageUrl: String
+}
+
+type Message {
+  id: ID
+  content: String
+  fileContent: String
+  fileName: String
+  fileType: String
+  s3FileName: String
+  createdAt: String
+  createdBy: String
+  conversationId: String
+  isDeleted: Boolean
+  isSystemGenerated: Boolean
+  readBy: String
+}

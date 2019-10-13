@@ -1,0 +1,41 @@
+type ConversationUser {
+
+    userId: String
+    conversation: Conversation
+    conversationId: String
+    isDeleted: Boolean
+    createdAt: String
+    info: User
+    
+}
+
+type User {
+
+    userId: String
+    email: String
+    firstName: String
+    lastName: String
+    profileImageUrl: String
+
+} 
+
+type Mutation {
+
+    conversationAddUser(
+        id: ID!
+        userId: String!
+    ): ConversationUser
+
+    conversationDeleteUser(
+        id: ID!
+        userId: String!
+    ): ConversationUser
+
+}
+
+type Subscription {
+    conversationAddUser(conversationId: String!): ConversationUser
+    @aws_subscribe(mutations: ["conversationAddUser"])
+    conversationDeleteUser(conversationId: String!): ConversationUser
+    @aws_subscribe(mutations: [ "conversationDeleteUser"])
+}

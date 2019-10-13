@@ -1,0 +1,231 @@
+{
+	"info": {
+		"_postman_id": "ce219417-2086-4dd1-8eaa-1c0ae044facc",
+		"name": "zippy-messaging-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "conversation-create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($user : String!) {\n    conversation_create(    \n        createdBy: $user\n    ){\n        id\n        createdAt\n        createdBy\n    }\n}",
+						"variables": "{\n\t\"user\": \"jane\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conversation_delete",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($conversationId : ID!) {\r\n    conversation_delete(\r\n        id: $conversationId\r\n    ) \r\n}\r\n ",
+						"variables": "{\n\t\"conversationId\" : \"3f245f30-9b09-11e9-b8b3-f3b63457ddab\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "message_create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($conversationId: ID! $content: String! $contentUrl: String $createdBy: String!) {\r\n    message_create(\r\n        conversationId: $conversationId\r\n        content: $content\r\n        contentUrl : $contentUrl\r\n        createdBy: $createdBy\r\n    ) {\r\n        id\r\n        content\r\n        contentUrl\r\n        createdAt\r\n        createdBy\r\n        isDeleted\r\n        isRead\r\n    }\r\n}\r\n ",
+						"variables": "{\n\t\"conversationId\" : \"612eaa90-9b09-11e9-b8b3-f3b63457ddab\",\n\t\"content\"  : \"Hello World\",\n\t\"contentUrl\" : \"TBA\",\n\t\"createdBy\" : \"jane\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "message_delete",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($id: ID! $createdAt: String!) {\r\n    message_delete(\r\n        id: $id\r\n        createdAt: $createdAt\r\n    ) {\r\n        id\r\n        content\r\n        contentUrl\r\n        createdAt\r\n        createdBy\r\n        isDeleted\r\n        isRead\r\n    }\r\n}\r\n ",
+						"variables": "{\n\t\"id\" : \"message:8157d7b0-9afa-11e9-9847-07f10a7d706e:2019-06-30\",\n\t\"createdAt\" : \"2019-06-30T05:55:45.028Z\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "message_read",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($id: ID! $createdAt: String!) {\r\n    message_read(\r\n        id: $id\r\n        createdAt: $createdAt\r\n    ) {\r\n        id\r\n        content\r\n        contentUrl\r\n        createdAt\r\n        createdBy\r\n        isDeleted\r\n        isRead\r\n    }\r\n}\r\n ",
+						"variables": "{\n\t\"id\" : \"message:8157d7b0-9afa-11e9-9847-07f10a7d706e:2019-06-30\",\n\t\"createdAt\" : \"2019-06-30T05:55:45.028Z\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conversation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query ($id: ID! $from: String! $to: String!) {\n    conversation(\n        id: $id\n        from: $from\n        to: $to\n    ) {\n        id\n        createdAt\n        createdBy\n        messages {\n            id\n            content\n            contentUrl\n            createdAt\n            createdBy\n            isDeleted\n            isRead\n        }\n    }\n}",
+						"variables": "{\n\t\"id\": \"612eaa90-9b09-11e9-b8b3-f3b63457ddab\",\n\t\"from\": \"2019-06-29T16:00:00.000Z\",\n\t\"to\": \"2019-06-30T15:59:59.999Z\"\n} "
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conversations",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query ($userId: String! $from: String! $to: String!) {\n    conversations(\n        userId: $userId\n        from: $from\n        to: $to\n    ) {\n        userId\n        conversation {\n            id\n            createdAt\n            createdBy\n        }\n        isDeleted\n        createdAt\n    }\n}",
+						"variables": "{\n\t\"userId\":  \"jane\",\n\t\"from\": \"2019-06-29T16:00:00.000Z\",\n\t\"to\": \"2019-06-30T15:59:59.999Z\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conversation_add_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($id : ID! $userId: String!) {\r\n    conversation_add_user(\r\n        id: $id\r\n        userId: $userId\r\n    ) {\r\n        userId\r\n        conversation{\r\n            id\r\n            createdBy\r\n            createdAt\r\n        }\r\n        isDeleted\r\n        createdAt\r\n    }\r\n}\r\n ",
+						"variables": "{\n\t\"id\" : \"73b0d020-9b05-11e9-8666-a7c4a523c142\",\n\t\"userId\": \"joe\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}",
+					"host": [
+						"{{HOST}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

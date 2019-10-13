@@ -1,0 +1,76 @@
+MappingTemplate:
+  - dataSource: Lambda_Messaging
+    type: Query
+    field: conversation
+    request: Query/conversation.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Query
+    field: conversations
+    request: Query/conversations.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Query
+    field: messages
+    request: Query/messages.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: conversationCreate
+    request: Mutation/conversationCreate.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: conversationDelete
+    request: Mutation/conversationDelete.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: conversationRead
+    request: Mutation/conversationRead.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: conversationAddUser
+    request: Mutation/conversationAddUser.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: conversationDeleteUser
+    request: Mutation/conversationDeleteUser.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: messageCreate
+    request: Mutation/messageCreate.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: messageDelete
+    request: Mutation/messageDelete.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Mutation
+    field: messageRead
+    request: Mutation/messageRead.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Conversation
+    field: members
+    request: Conversation/members.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: Conversation
+    field: messages
+    request: Conversation/messages.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: ConversationUser
+    field: conversation
+    request: ConversationUser/conversation.txt
+    response: response.txt
+  - dataSource: Lambda_Messaging
+    type: ConversationUser
+    field: info
+    request: ConversationUser/info.txt
+    response: response.txt

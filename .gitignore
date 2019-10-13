@@ -1,0 +1,4 @@
+/.project
+/.serverless/
+/node_modules/
+.idea/
