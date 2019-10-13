@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "ce219417-2086-4dd1-8eaa-1c0ae044facc",
-		"name": "zippy-messaging-service",
+		"name": "messaging-service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

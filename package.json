@@ -1,7 +1,7 @@
 {
   "name": "messaging-service",
   "version": "1.0.0",
-  "description": "[ZippyCrowd] Messaging Service",
+  "description": "Messaging Service",
   "scripts": {
     "deploy": "serverless deploy -s dev",
     "takedown": "serverless remove -s dev",
