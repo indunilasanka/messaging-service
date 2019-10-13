@@ -9,7 +9,7 @@
     "ddb:purge": "cross-env STAGE=local node ./utils/dynamodb/purge.js",
     "test": "serverless-bundle test"
   },
-  "author": "Maria Santos",
+  "author": "waindunilasanka@gmail.com",
   "dependencies": {
     "aws-sdk": "^2.437.0",
     "lodash": "^4.17.11",
